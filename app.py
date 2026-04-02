@@ -19,7 +19,9 @@ try:
     from utils.ai_features import (
         simple_semantic_rewrite, interview_qa_simulator, skill_gap_and_learning_path,
         company_targeted_tailoring, explainable_match_report, resume_pdf_bytes,
-        chatbot_response, suggest_roles_and_salary
+        chatbot_response, suggest_roles_and_salary,
+        extract_interview_questions, generate_impact_bullets,
+        standardize_job_title, generate_email_followup
     )
     AI_SUPPORT = True
 except Exception:

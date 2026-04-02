@@ -52,19 +52,46 @@ def interview_qa_simulator(resume_text, job_desc=None):
     skills = extract_skills(resume_text)
     questions = []
     answers = []
+
+    skill_answer_templates = {
+        "sql": "I have built and optimized SQL queries for reporting and analytics, designed and maintained documentation, and ensured data accuracy when solving {skill}-related challenges.",
+        "python": "I have developed Python scripts and applications to automate workflows, analyze data, and integrate APIs; I also wrote tests and used standard libraries to create maintainable solutions.",
+        "java": "I have implemented Java services with object-oriented design, built unit-tested modules, and collaborated on code reviews to ensure performance and reliability in real-world projects.",
+        "excel": "I have used Excel to perform data analysis, pivot table reporting, and process automation with formulas and macros to produce clean insights.",
+        "javascript": "I have built frontend and backend components, worked with DOM APIs and node.js tooling, and translated requirements into responsive, modular code.",
+    }
+
     for s in skills[:10]:
         q = f"Can you describe your experience with {s}?"
-        a = f"I have worked with {s} in academic and practical settings; I used it to solve problems and implement solutions."
+        key = s.lower().strip()
+        template = skill_answer_templates.get(key)
+        if template is None:
+            template = "I have practical experience with {skill}, where I used it to solve problems and deliver reliable, repeatable results in team contexts."
+        a = template.format(skill=s)
         questions.append(q)
         answers.append(a)
 
-    # add experience prompts
-    ex_lines = [l.strip() for l in re.split(r"\n|\.|;", resume_text) if l.strip()][:5]
-    for ex in ex_lines:
-        q = f"Tell me about a time you {ex[:60]}..."
-        a = f"In that role, I {ex}. I focused on outcomes and collaboration."
+    # add experience prompts from meaningful lines only
+    ex_lines = [l.strip() for l in re.split(r"\n|\.|;", resume_text) if l.strip()]
+    seen = set()
+    alt_responses = [
+        "I focused on clear communication and measurable outcomes while driving the task to completion.",
+        "I prioritized collaboration and data-driven decisions to meet project requirements on time.",
+        "I worked closely with stakeholders to align execution with expected business value.",
+    ]
+    for i, ex in enumerate(ex_lines):
+        if len(ex) < 20 or "expected" in ex.lower() or "gpa" in ex.lower():
+            continue
+        short = ex[:60].rstrip()
+        if short in seen:
+            continue
+        seen.add(short)
+        q = f"Tell me about a time you {short}..."
+        a = f"In that role, I {ex}. {alt_responses[i % len(alt_responses)]}"
         questions.append(q)
         answers.append(a)
+        if len(questions) >= 15:
+            break
 
     return list(zip(questions, answers))
 
