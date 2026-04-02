@@ -3,7 +3,15 @@ from models.embedding_model import EmbeddingModel
 from utils.text_processing import clean_text
 from utils.similarity import compute_similarity
 from utils.skill_extraction import extract_skills
-from utils.pdf_utils import extract_text_from_pdf
+try:
+    from utils.pdf_utils import extract_text_from_pdf
+    PDF_SUPPORT = True
+except Exception:
+    # PyPDF2 not installed or import failed — disable PDF support gracefully
+    def extract_text_from_pdf(file_obj):
+        return ""
+
+    PDF_SUPPORT = False
 from utils.job_suggester import suggest_jobs_from_text
 
 # Load model
