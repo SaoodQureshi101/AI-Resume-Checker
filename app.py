@@ -21,8 +21,8 @@ st.title("AI Resume Analyzer & Job Match Assistant")
 
 st.subheader("Resume Input")
 uploaded_file = st.file_uploader("Upload resume (PDF) or paste text", type=["pdf", "txt"])
-resume_text_area = st.text_area("Or paste your resume here (optional)")
-job_desc = st.text_area("Paste job description here")
+resume_text_area = st.text_area("Or paste your resume here (required if no upload)")
+job_desc = st.text_area("Paste job description here (optional)")
 
 def get_resume_text():
     if uploaded_file is not None:
@@ -37,41 +37,43 @@ def get_resume_text():
 
 if st.button("Analyze"):
     resume_text = get_resume_text()
-    if resume_text and job_desc:
+    if not resume_text:
+        st.warning("Please provide a resume (upload or paste).")
+    else:
         clean_resume = clean_text(resume_text)
-        clean_job = clean_text(job_desc)
-
-        emb_resume = model.encode([clean_resume])[0]
-        emb_job = model.encode([clean_job])[0]
-
-        score = compute_similarity(emb_resume, emb_job)
-
         resume_skills = extract_skills(clean_resume)
-        job_skills = extract_skills(clean_job)
-
-        missing_skills = list(set(job_skills) - set(resume_skills))
-
-        st.subheader("Match Score")
-        pct = round(score * 100, 2)
-        st.write(f"{pct}%")
-
-        st.markdown("**What this score means:** The score is the cosine similarity between the semantic embeddings of your resume and the job description. It ranges from 0 (no similarity) to 1 (very similar). Higher values indicate the overall meaning and phrasing of your resume more closely match the job description — not just keyword overlap.")
 
         st.subheader("Resume Skills")
         st.write(resume_skills)
 
-        st.subheader("Missing Skills")
-        st.write(missing_skills)
-
-        if missing_skills:
-            st.subheader("Suggestions")
-            st.write("Consider adding these skills if applicable:")
-            st.write(missing_skills)
-
         # Suggest jobs based on resume content
         suggested = suggest_jobs_from_text(resume_text)
         if suggested:
-            st.subheader("Other jobs that may fit better")
+            st.subheader("Suggested jobs based on your resume")
             st.write(suggested[:5])
-    else:
-        st.warning("Please provide both a resume (upload or paste) and a job description.")
+
+        # If a job description was provided, run the full comparison
+        if job_desc and job_desc.strip():
+            clean_job = clean_text(job_desc)
+
+            emb_resume = model.encode([clean_resume])[0]
+            emb_job = model.encode([clean_job])[0]
+
+            score = compute_similarity(emb_resume, emb_job)
+
+            job_skills = extract_skills(clean_job)
+            missing_skills = list(set(job_skills) - set(resume_skills))
+
+            st.subheader("Match Score")
+            pct = round(score * 100, 2)
+            st.write(f"{pct}%")
+
+            st.markdown("**What this score means:** The score is the cosine similarity between the semantic embeddings of your resume and the job description. It ranges from 0 (no similarity) to 1 (very similar). Higher values indicate the overall meaning and phrasing of your resume more closely match the job description — not just keyword overlap.")
+
+            st.subheader("Missing Skills")
+            st.write(missing_skills)
+
+            if missing_skills:
+                st.subheader("Suggestions")
+                st.write("Consider adding these skills if applicable:")
+                st.write(missing_skills)
