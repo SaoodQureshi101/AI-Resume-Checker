@@ -28,15 +28,41 @@ except Exception:
 # Load model
 model = EmbeddingModel()
 
-st.title("AI Resume Analyzer & Job Match Assistant")
+st.markdown("""
+<style>
+body {
+    background-color: white !important;
+}
+.big-header { font-size: 2.8rem; font-weight: 700; color: #2b6cb0; margin-bottom: 0.2rem; }
+.small-subtitle { font-size: 1.1rem; color: #2a4365; margin-bottom: 1rem; }
+.card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06); }
+.highlight { color: #dd6b20; font-weight: 700; }
+.quote { color: #2d3748; font-style: italic; padding: 8px 14px; background: #f7fafc; border-radius: 8px; margin-bottom: 10px; }
+.logo-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; margin-bottom: 15px; }
+.logo-row img { height: 35px; filter: grayscale(40%); opacity: 0.88; }
+.sticker { background: #f85149; color: #fff; font-size: 0.9rem; font-weight: 700; display: inline-block; padding: 4px 10px; border-radius: 12px; margin: 6px 4px; }
+</style>
+""", unsafe_allow_html=True)
 
-mode = st.selectbox("Mode", ["Analyze", "Generate", "Advanced"], index=0)
+st.markdown('<div class="big-header">🚀 AI Resume Analyzer & Job Match Assistant</div>', unsafe_allow_html=True)
+st.markdown('<div class="small-subtitle">Pure white UI, powerful tools, and motivational energy to keep you moving forward.</div>', unsafe_allow_html=True)
 
-if mode == "Analyze":
+st.markdown('<div class="logo-row"><img src="https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_TV_2015.png"/><img src="https://upload.wikimedia.org/wikipedia/commons/0/02/Google_2015_logo.svg"/><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"/><img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Stripe_Logo%2C_revised_2016.png"/></div>', unsafe_allow_html=True)
+
+st.markdown('<div class="quote">"Success is not final, failure is not fatal: it is the courage to continue that counts." – Winston Churchill</div>', unsafe_allow_html=True)
+st.markdown('<div class="quote">"The only way to do great work is to love what you do." – Steve Jobs</div>', unsafe_allow_html=True)
+st.markdown('<div class="quote">"Never, never, never give up." – Winston S. Churchill</div>', unsafe_allow_html=True)
+
+st.markdown('<div class="sticker">NEVER GIVE UP</div><div class="sticker">HUSTLE</div><div class="sticker">LEVEL UP</div>', unsafe_allow_html=True)
+
+tab1, tab2, tab3 = st.tabs(["🔍 Analyze", "✍️ Generate", "🧠 Advanced"])
+
+
+with tab1:
     st.subheader("Resume Input")
-    uploaded_file = st.file_uploader("Upload resume (PDF) or paste text", type=["pdf", "txt"])
-    resume_text_area = st.text_area("Or paste your resume here (required if no upload)")
-    job_desc = st.text_area("Paste job description here (optional)")
+    uploaded_file = st.file_uploader("Upload resume (PDF) or paste text", type=["pdf", "txt"], key="uploader_analyze")
+    resume_text_area = st.text_area("Or paste your resume here (required if no upload)", key="resume_text_analyze")
+    job_desc = st.text_area("Paste job description here (optional)", key="job_desc_analyze")
 
     def get_resume_text():
         if uploaded_file is not None:
@@ -92,18 +118,18 @@ if mode == "Analyze":
                     st.write("Consider adding these skills if applicable:")
                     st.write(missing_skills)
 
-elif mode == "Generate":
+with tab2:
     st.subheader("Generate Resume & Cover Letter")
     with st.form("gen_form"):
-        name = st.text_input("Full name")
-        contact = st.text_input("Contact info (email / phone / LinkedIn)")
-        education = st.text_area("Education (short)")
-        skills = st.text_area("Skills (comma separated)")
-        experiences = st.text_area("Experiences (one per line)")
-        target_job = st.text_input("Target job title (optional)")
-        target_company = st.text_input("Target company (optional)")
-        tone = st.selectbox("Tone", ["Professional", "Casual", "Enthusiastic"])
-        submitted = st.form_submit_button("Generate")
+        name = st.text_input("Full name", key="gen_name")
+        contact = st.text_input("Contact info (email / phone / LinkedIn)", key="gen_contact")
+        education = st.text_area("Education (short)", key="gen_education")
+        skills = st.text_area("Skills (comma separated)", key="gen_skills")
+        experiences = st.text_area("Experiences (one per line)", key="gen_experiences")
+        target_job = st.text_input("Target job title (optional)", key="gen_target_job")
+        target_company = st.text_input("Target company (optional)", key="gen_target_company")
+        tone = st.selectbox("Tone", ["Professional", "Casual", "Enthusiastic"], key="gen_tone")
+        submitted = st.form_submit_button("Generate", key="gen_submit")
 
     if submitted:
         resume_out = generate_resume_text(name or "", contact or "", education or "", skills or "", experiences or "")
@@ -117,15 +143,15 @@ elif mode == "Generate":
         st.text_area("Cover letter output", cover_out, height=300)
         st.download_button("Download cover letter (TXT)", cover_out, file_name="cover_letter.txt")
 
-elif mode == "Advanced":
+with tab3:
     if not AI_SUPPORT:
         st.warning("Advanced AI features require additional dependencies. Install reportlab and ensure ai_features.py is available.")
     else:
         st.subheader("Advanced AI Features")
-        uploaded_file = st.file_uploader("Upload resume (PDF) or paste text", type=["pdf", "txt"])
-        resume_text_area = st.text_area("Or paste your resume here")
-        job_desc = st.text_area("Job description (for relevant features)")
-        company = st.text_input("Company name (for tailoring)")
+        uploaded_file = st.file_uploader("Upload resume (PDF) or paste text", type=["pdf", "txt"], key="uploader_advanced")
+        resume_text_area = st.text_area("Or paste your resume here", key="resume_text_advanced")
+        job_desc = st.text_area("Job description (for relevant features)", key="job_desc_advanced")
+        company = st.text_input("Company name (for tailoring)", key="company_advanced")
 
         def get_resume_text():
             if uploaded_file is not None:
@@ -141,7 +167,9 @@ elif mode == "Advanced":
         feature = st.selectbox("Select Feature", [
             "Semantic Resume Rewriter", "Interview Q&A Simulator", "Skill Gap & Learning Path",
             "Company-Targeted Tailoring", "Explainable Match Report", "Resume Formatting & PDF Export",
-            "Interactive Revision Chatbot", "Role Suggestion + Salary Estimate"
+            "Interactive Revision Chatbot", "Role Suggestion + Salary Estimate",
+            "Q&A Skill Extractor", "Impact Bullet Generator", "Job Title Normalizer", "Email / Follow-up Builder",
+            "A/B Resume Comparator"
         ])
 
         if st.button("Run Feature"):
@@ -209,4 +237,48 @@ elif mode == "Advanced":
                     suggestions = suggest_roles_and_salary(resume_text)
                     st.subheader("Suggested Roles & Salaries")
                     for s in suggestions:
-                        st.write(f"**{s['role']}:** ${s['salary_range'][0]:,} - ${s['salary_range'][1]:,}")
+                        st.write(f"**{s['role']} ({s['source']}):** ${s['salary_range'][0]:,} - ${s['salary_range'][1]:,}")
+
+                elif feature == "Q&A Skill Extractor":
+                    qs = extract_interview_questions(resume_text, job_desc)
+                    st.subheader("Generated Interview Questions")
+                    for q in qs[:15]:
+                        st.write(f"- {q}")
+
+                elif feature == "Impact Bullet Generator":
+                    bullets = generate_impact_bullets(resume_text)
+                    st.subheader("Impact Bullets")
+                    for b in bullets:
+                        st.write(f"- {b}")
+
+                elif feature == "Job Title Normalizer":
+                    normalized = standardize_job_title(job_desc or "")
+                    st.subheader("Standardized Job Title")
+                    st.write(normalized)
+
+                elif feature == "Email / Follow-up Builder":
+                    candidate = st.text_input("Candidate name", key="followup_name")
+                    company_field = st.text_input("Company name", key="followup_company")
+                    role_field = st.text_input("Role", key="followup_role")
+                    if st.button("Generate Email", key="followup_generate"):
+                        template = generate_email_followup(candidate or "Hiring Manager", company_field or "your company", role_field or "the position")
+                        st.text_area("Follow-up message", template, height=220)
+
+                elif feature == "A/B Resume Comparator":
+                    st.write("This feature compares two resume versions to identify stronger semantic match components.")
+                    version_a = st.text_area("Resume version A", key="ab_a")
+                    version_b = st.text_area("Resume version B", key="ab_b")
+                    if st.button("Compare versions", key="ab_compare"):
+                        if not version_a or not version_b:
+                            st.warning("Please enter both versions")
+                        else:
+                            sa = model.encode([clean_text(version_a)])[0]
+                            sb = model.encode([clean_text(version_b)])[0]
+                            sj = model.encode([clean_text(job_desc or "")])[0] if job_desc else None
+                            sim_a = compute_similarity(sa, sj) if sj is not None else None
+                            sim_b = compute_similarity(sb, sj) if sj is not None else None
+                            st.write(f"Version A similarity: {round(sim_a * 100,2) if sim_a is not None else 'N/A'}%")
+                            st.write(f"Version B similarity: {round(sim_b * 100,2) if sim_b is not None else 'N/A'}%")
+                            if sim_a is not None and sim_b is not None:
+                                winner = 'A' if sim_a > sim_b else 'B' if sim_b > sim_a else 'Tie'
+                                st.write(f"Better fit: {winner}")

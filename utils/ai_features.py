@@ -151,9 +151,60 @@ def chatbot_response(user_input, resume_text):
     return "I can help rewrite the resume, suggest skills, or simulate interview Q&A. Try: 'Rewrite my resume' or 'Simulate interview'."
 
 
-def suggest_roles_and_salary(resume_text):
+from .salary_api import fetch_average_wage
+
+
+def extract_interview_questions(resume_text, job_desc=None):
+    skills = extract_skills(resume_text)
+    questions = [f"Describe a project where you used {s}." for s in skills[:8]]
+    if job_desc:
+        job_skills = extract_skills(job_desc)
+        questions += [f"How does your experience with {jp} apply to this role?" for jp in job_skills[:5]]
+    return questions
+
+
+def generate_impact_bullets(resume_text):
+    lines = [l.strip() for l in resume_text.splitlines() if l.strip()]
+    bullets = []
+    for l in lines[:8]:
+        bullets.append(f"Improved {l} by 20% through optimization and testing.")
+    if not bullets:
+        bullets.append("Improved workflow efficiency by 20% through process automation.")
+    return bullets
+
+
+def standardize_job_title(title):
+    mapping = {
+        "dev": "Junior Software Developer",
+        "developer": "Junior Software Developer",
+        "help desk": "Help Desk Technician",
+        "network": "Network Technician",
+        "crm": "CRM Administrator"
+    }
+    t = title.lower()
+    for key, out in mapping.items():
+        if key in t:
+            return out
+    return title
+
+
+def generate_email_followup(name, company, role):
+    return (
+        f"Hi {name},\n\nThank you for considering my application for {role} at {company}. "
+        "I’m excited about the opportunity and would love to discuss how I can help your team succeed. "
+        "Please let me know if you need any additional information.\n\nBest regards,\n[Your Name]"
+    )
+
+
+def suggest_roles_and_salary(resume_text, place="United States"):
     roles = suggest_jobs_from_text(resume_text)
     estimates = []
     for r in roles:
-        estimates.append({"role": r, "salary_range": SALARY_ESTIMATES.get(r, (40000, 80000))})
+        market_wage = fetch_average_wage(r, place)
+        if market_wage is not None:
+            low = int(market_wage * 0.9)
+            high = int(market_wage * 1.1)
+            estimates.append({"role": r, "salary_range": (low, high), "source": "Data USA"})
+        else:
+            estimates.append({"role": r, "salary_range": SALARY_ESTIMATES.get(r, (40000, 80000)), "source": "fallback"})
     return estimates
