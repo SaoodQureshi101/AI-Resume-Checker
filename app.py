@@ -92,7 +92,7 @@ if mode == "Analyze":
                     st.write("Consider adding these skills if applicable:")
                     st.write(missing_skills)
 
-else:  # Generate mode
+elif mode == "Generate":
     st.subheader("Generate Resume & Cover Letter")
     with st.form("gen_form"):
         name = st.text_input("Full name")
