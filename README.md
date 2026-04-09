@@ -43,60 +43,58 @@ The implementation will be developed using:
 * reportlab (optional PDF output)
 * requests (Data USA API salary lookup)
 
-## What has been built so far
 
-- merged and fixed conflicting files
-- basic resume vs job description analyzer with match score + missing skills
-- resume / job skill extraction module
-- PDF upload support with fallback processing
-- composite mode structure: Analyze, Generate, Advanced
-- Generate mode creates resume / cover letter skeleton from user inputs
-- Advanced mode features:
-  - Semantic Resume Rewriter
-  - Interview Q&A Simulator
-  - Skill Gap & Learning Path
-  - Company-Targeted Tailoring
-  - Explainable Match Report
-  - Resume Formatting & PDF Export
-  - Interactive Revision Chatbot
-  - Role Suggestion + Salary Estimate
-  - Q&A Skill Extractor
-  - Impact Bullet Generator
-  - Job Title Normalizer
-  - Email / Follow-up Builder
-  - A/B Resume Comparator
-- UX improvements: white theme, motivational quotes, company logos, stickers, cards, tabs
+## How to Run
 
-## Specific AI components and usage
+### 1) Open the project folder
 
-1. **Sentence-BERT (`all-MiniLM-L6-v2`)**
-   - `models/embedding_model.py`
-   - used for semantic encoding of resume and job description text
-   - similarity scoring in `utils/similarity.py`
-   - explainable match report ranking in `utils/ai_features.py`
+Use PowerShell and move into the project directory:
 
-2. **Skill extraction (rule-based)**
-   - `utils/skill_extraction.py`
-   - keyword matching from `SKILL_KEYWORDS`
-   - used in analyzer for resume/job skills and in advanced features for gaps and role suggestions
+```powershell
+cd "C:\Users\1\OneDrive\Desktop\ai-resume-analyzer"
+```
 
-3. **AI features (heuristics + embedding utilities)**
-   - `utils/ai_features.py`
-   - Semantic rewrite, interview Q&A, skill gap/path, company tailoring, chat assistant, role+salary suggestions
+### 2) Create and activate a virtual environment (first time)
 
-4. **Job suggester mapping**
-   - `utils/job_suggester.py`
-   - role suggestions from skill match and salary range estimation
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
 
-5. **PDF support / formatting**
-   - `utils/pdf_utils.py` (PyPDF2 PDF parsing)
-   - `utils/ai_features.py` PDF generation via reportlab
+If PowerShell blocks script execution, run this once and then activate again:
 
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+### 3) Install dependencies
+
+```powershell
+pip install -r requirements.txt
+```
+
+### 4) Run the app
+
+```powershell
+streamlit run app.py
+```
+
+### 5) Open in browser
+
+Streamlit will print a local URL (usually `http://localhost:8501`). Open it in your browser.
+
+### Common issue
+
+Do not run this app with `python app.py`. This project is a Streamlit app and should be started with `streamlit run app.py`.
 
 ## Notes
 
 - This is essentially hybrid AI: deep semantic matching via Sentence-BERT + deterministic skill heuristics.
 - The “advanced AI” features are implemented as intelligent patterns and transformations (not cloud LLM calls), which makes the app fast and local.
+
+## link to youtube video
+
+https://youtu.be/LdeJYbPsJ9o
 
 
 
