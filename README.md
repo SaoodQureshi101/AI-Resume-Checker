@@ -33,7 +33,7 @@ This project uses sentence-transformers `all-MiniLM-L6-v2` to generate resume an
 
 ## Tools and Technologies
 
-The implementation will be developed using:
+The implementation wasdeveloped using:
 
 * Python
 * HuggingFace Transformers (Sentence-BERT)
