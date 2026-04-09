@@ -92,9 +92,10 @@ Do not run this app with `python app.py`. This project is a Streamlit app and sh
 - This is essentially hybrid AI: deep semantic matching via Sentence-BERT + deterministic skill heuristics.
 - The “advanced AI” features are implemented as intelligent patterns and transformations (not cloud LLM calls), which makes the app fast and local.
 
-## link to youtube video
+## link to youtube video and google slides
 
 https://youtu.be/LdeJYbPsJ9o
+https://docs.google.com/presentation/d/1qDIWOJoPesEcXJQ8VRq1xuSqldNvTR0x_As3nVF3Kqg/edit?slide=id.g3d527d1a287_1_19#slide=id.g3d527d1a287_1_19
 
 
 
